@@ -1,0 +1,130 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Table User</h2>
+
+    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="ClearScreen();">Create New</button>
+<hr />
+
+<table id="table_user" class="table table-responsive">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Email</th>
+            <th>PhoneNumber</th>
+            <th>UserName</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+</table>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title" id="myModalLabel">Role Form</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="Id">Id</label>
+                    <input type="text" class="form-control" id="UserIdText" placeholder="Id" />
+                </div>
+                <div class="form-group">
+                    <label for="Email">Email</label>
+                    <input type="text" class="form-control" id="UserEmailText" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <label for="PhoneNumber">Phone Number</label>
+                    <input type="text" class="form-control" id="UserPhoneNumberText" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <label for="UserName">Username</label>
+                    <input type="text" class="form-control" id="UserUserNameText" placeholder="Name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="Save" onclick="Validation();">Add</button>
+                <button type="button" class="btn btn-primary" id="Update" onclick="Validation();">Update</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+@section scripts{
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#table_user").DataTable({
+                "ajax": {
+                    "url": "/Users/GetDataUsers",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Id" },
+                    { "data": "Email" },
+                    { "data": "PhoneNumber" },
+                    { "data": "UserName" }
+                ]
+            })
+        })
+
+        function Save() {
+            var role = new Object();
+            role.Name = $("#RoleNameText").val();
+            $.ajax({
+                "url": "/Users/Create/",
+                "type": "POST",
+                "datatype": "json",
+                "data": role
+            }).then((result) => {
+                if (result.data[0] != 0) {
+                    Swal.fire(
+                        'Success!',
+                        'Your file has been inserted.',
+                        'success'
+                    ).then(() => {
+                        $('#table_role').DataTable().ajax.reload();
+                    })
+                }
+                else {
+                    Swal.fire(
+                        'Failed!',
+                        'Your file not inserted.',
+                        'failed'
+                    ).then(() => {
+                        $('#table_role').DataTable().ajax.reload();
+                    })
+                }
+                $("#myModal").modal('hide');
+            })
+        }
+
+        function ClearScreen() {
+            document.getElementById("UserIdText").disabled = true;
+            $("#RoleNameText").val('');
+            $('#Update').hide();
+        }
+
+        function Validation() {
+            if ($("#RoleNameText").val() == "" || $("#RoleNameText").val == " ") {
+                Swal.fire('Please Fill Name');
+            }
+            else if ($("#RoleIdText").val() == "" || $("#RoleIdText").val == " ") {
+                Save();
+            }
+            else {
+                Edit($("#RoleIdText").val())
+            }
+        }
+    </script>
+}

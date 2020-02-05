@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table id="table" class="table table-responsive">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+    </thead>
+</table>
+
+<link href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+@section scripts{
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            debugger;
+            $("#table").DataTable({
+                "ajax": {
+                    "url": "/Batches/List",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Id" },
+                    {
+                        "data": "Start_Date", "render": function (d) {
+                            return moment(d).format('DD/MM/YYYY');
+                        }
+                    },
+                    {
+                        "data": "End_Date", "render": function (d) {
+                            return moment(d).format('DD/MM/YYYY');
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}

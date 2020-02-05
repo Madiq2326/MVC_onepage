@@ -11,6 +11,7 @@
 <table id="table_role" class="table table-responsive">
     <thead>
         <tr>
+            <th>Id</th>
             <th>Name</th>
             <th>Action</th>
         </tr>
@@ -25,11 +26,8 @@
                 <h4 class="modal-title" id="myModalLabel">Role Form</h4>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="Id">Id</label>
-                    <input type="text" class="form-control" id="RoleIdText" placeholder="Id" />
-                </div>
-                <div class="form-group">
+                    <input type="hidden" class="form-control" id="RoleIdText" placeholder="Id"/>
+                <div  iv class="form-group">
                     <label for="Name">Name</label>
                     <input type="text" class="form-control" id="RoleNameText" placeholder="Name">
                 </div>
@@ -52,14 +50,14 @@
 
     <script>
         $(document).ready(function () {
-            debugger
-            $("#table_role").DataTable({
+           $("#table_role").DataTable({
                 "ajax": {
-                    "url": "/Roles/GetDataRoles",
+                    "url": "/Roles/List",
                     "type": "GET",
                     "datatype": "json"
                 },
-                "columns": [
+               "columns": [
+                    { "data": "Id" },
                     { "data": "Name" },
                     {
                         "render": function (data, type, row, meta) {
@@ -91,23 +89,28 @@
                                 'Success!',
                                 'Your file has been deleted.',
                                 'success'
-                            )
+                            ).then(() => {
+                                $('#table_role').DataTable().ajax.reload();
+                            })
                         }
                         else {
                             Swal.fire(
                                 'Failed!',
                                 'Your file not deleted.',
                                 'failed'
-                            )
+                            ).then(() => {
+                                $('#table_role').DataTable().ajax.reload();
+                            })
                         }
                         $("#myModal").modal('hide');
+                        $('#table_role').DataTable().ajax.reload();
                     })
-                    location.reload();
                 }
             })
         }
 
         function Edit(Id) {
+            debugger;
             var role = new Object();
             role.Id = $("#RoleIdText").val();
             role.Name = $("#RoleNameText").val();
@@ -117,22 +120,26 @@
                 "datatype": "json",
                 "data": {Id: role.Id, Name: role.Name}
             }).then((result) => {
-                if (result.data[0] != 0) {
+                if (result.data != 0) {
                     Swal.fire(
                         'Success!',
                         'Your file has been updated.',
                         'success'
-                    )
+                    ).then(() => {
+                        $('#table_role').DataTable().ajax.reload();
+                    })
                 }
                 else {
                     Swal.fire(
                         'Failed!',
                         'Your file not updated.',
                         'failed'
-                    )
+                    ).then(() => {
+                        $('#table_role').DataTable().ajax.reload();
+                    })
                 }
                 $("#myModal").modal('hide');
-                location.reload();
+                $('#table_role').DataTable().ajax.reload();
             })
         }
 
@@ -150,31 +157,34 @@
                         'Success!',
                         'Your file has been inserted.',
                         'success'
-                    )
+                    ).then(() => {
+                        $('#table_role').DataTable().ajax.reload();
+                    })
                 }
                 else {
                     Swal.fire(
                         'Failed!',
                         'Your file not inserted.',
                         'failed'
-                    )
+                    ).then(() => {
+                        $('#table_role').DataTable().ajax.reload();
+                    })
                 }
                 $("#myModal").modal('hide');
-                location.reload();
-            })
+                })
         }
 
         function GetById(Id) {
             $.ajax({
-                "url": "/Roles/Details/",
+                "url": "/Roles/Details/" + Id,
                 "type": "GET",
                 "datatype": "json",
                 "data": { Id: Id }
             }).then((result) => {
-                if (result.data[0] != null) {
+                if (result.data != null) {
                     document.getElementById("RoleIdText").disabled = true;
-                    $("#RoleIdText").val(result.data[0].Id);
-                    $("#RoleNameText").val(result.data[0].Name)
+                    $("#RoleIdText").val(result.data.Id);
+                    $("#RoleNameText").val(result.data.Name)
 
                     $("#myModal").modal('show');
                     $("#Update").show();
